@@ -13,10 +13,10 @@ struct icat {
     bool show_tabs;
 };
 
+struct icat icat = {false, false};
+
 int main(int argc, char *argv[]) {
     char *file;
-
-    struct icat icat = {false, false};
 
     static struct option const long_options[] = {
         {"number", no_argument, nullptr, 'n'},
@@ -68,7 +68,16 @@ void usage(int status) {
 
 void streamcopy(FILE *fin, FILE *fout) {
     int c;
-    while ((c = getc(fin)) != EOF) {
+    int n = 1;
+    while ((c = fgetc(fin)) != EOF) {
+        if (icat.show_numbers && (n == 1)) {
+            printf("%8d ", n);
+            n++;
+        }
         putc(c, fout);
+        if (icat.show_numbers && (c == '\n')) {
+            n++;
+            printf("%8d ", n);
+        }
     }
 }
