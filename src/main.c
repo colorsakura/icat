@@ -9,25 +9,30 @@ void usage(int status);
 void streamcopy(FILE *fin, FILE *fout);
 
 struct icat {
-    bool number;
+    bool show_numbers;
+    bool show_tabs;
 };
 
 int main(int argc, char *argv[]) {
     char *file;
 
-    struct icat icat = {false};
+    struct icat icat = {false, false};
 
     static struct option const long_options[] = {
         {"number", no_argument, nullptr, 'n'},
+        {"show-tabs", no_argument, nullptr, 'T'},
         {"version", no_argument, nullptr, 'v'},
         {"help", no_argument, nullptr, 'h'}};
 
     /* Parse command line options. */
     int c;
-    while ((c = getopt_long(argc, argv, "nvh", long_options, nullptr)) != -1) {
+    while ((c = getopt_long(argc, argv, "nTvh", long_options, nullptr)) != -1) {
         switch (c) {
         case 'n':
-            icat.number = true;
+            icat.show_numbers = true;
+            break;
+        case 'T':
+            icat.show_tabs = true;
             break;
         case 'h':
             usage(EXIT_SUCCESS);
@@ -54,13 +59,11 @@ int main(int argc, char *argv[]) {
 }
 
 void usage(int status) {
-    const char *msg = "icat: a cat like command;\n"
-                      "  usage: icat {file}\n";
-    printf("icat version: %s\n\n", ICAT_VERSION);
-    printf("%s", msg);
-    if (status == EXIT_FAILURE) {
-        exit(EXIT_FAILURE);
-    }
+    const char *usage = "Usage: icat [OPTION]... [FILE]...\n"
+                        "Concatenate FILE(s) to standard output.\n"
+                        "\n";
+    printf("%s", usage);
+    exit(status);
 }
 
 void streamcopy(FILE *fin, FILE *fout) {
