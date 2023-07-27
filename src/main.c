@@ -72,8 +72,7 @@ void streamcopy(FILE *fin, FILE *fout) {
     int n = 1;
     while ((buffer = readline(fin)) != nullptr) {
         if (icat.show_numbers) {
-            printf("%8d ", n);
-            n++;
+            printf("%8d  ", n++);
         }
         printf("%s\n", buffer);
     }
@@ -84,10 +83,9 @@ void streamcopy(FILE *fin, FILE *fout) {
    Otherwise return a newly malloced buffer. if EOF is read this function
    returns NULL.  */
 char *readline(FILE *istream) {
-    int ix = 0, buffer_size = 0;
+    int ix = 0, buffer_size = 64;
     char *buffer;
 
-    buffer_size = 64;
     buffer = (char *)malloc(buffer_size);
 
     for (;; ++ix) {
