@@ -2,11 +2,11 @@ name: build
 on:
   push:
     branches:
-      - 'main'
+      - "main"
 
   pull_request:
     branches:
-      - 'main'
+      - "main"
 
 jobs:
   main:
@@ -21,6 +21,5 @@ jobs:
       - run: sudo apt-get install -y gcc meson ninja git
 
       - run: |
-        meson build
-        cd build && ninja
-  
+          meson build
+          cd build && ninja
