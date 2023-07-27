@@ -1,3 +1,4 @@
+#include "color.h"
 #include <getopt.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -72,7 +73,7 @@ void streamcopy(FILE *fin, FILE *fout) {
     int n = 1;
     while ((buffer = readline(fin)) != nullptr) {
         if (icat.show_numbers) {
-            printf("%8d  ", n++);
+            printf(DARY_GRAY "%8d  " NONE, n++);
         }
         printf("%s\n", buffer);
     }
