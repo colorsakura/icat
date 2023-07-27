@@ -7,6 +7,7 @@
 
 void usage(int status);
 void streamcopy(FILE *fin, FILE *fout);
+char *readline(FILE *istream);
 
 struct icat {
     bool show_numbers;
@@ -67,17 +68,50 @@ void usage(int status) {
 }
 
 void streamcopy(FILE *fin, FILE *fout) {
-    int c;
+    char *buffer = "heloo";
     int n = 1;
-    while ((c = fgetc(fin)) != EOF) {
-        if (icat.show_numbers && (n == 1)) {
+    while ((buffer = readline(fin)) != nullptr) {
+        if (icat.show_numbers) {
             printf("%8d ", n);
             n++;
         }
-        putc(c, fout);
-        if (icat.show_numbers && (c == '\n')) {
-            n++;
-            printf("%8d ", n);
-        }
+        printf("%s\n", buffer);
     }
+}
+
+/* Read a line from FILE stream as a null terminated string.  If buffer is
+   non NULL use at most buffer_size bytes and return a pointer to buffer.
+   Otherwise return a newly malloced buffer. if EOF is read this function
+   returns NULL.  */
+char *readline(FILE *istream) {
+    int ix = 0, buffer_size = 0;
+    char *buffer;
+
+    buffer_size = 64;
+    buffer = (char *)malloc(buffer_size);
+
+    for (;; ++ix) {
+        int ch;
+
+        if (ix == buffer_size - 1) {
+            if (!buffer_size)
+                break;
+            buffer_size += buffer_size;
+            buffer = (char *)realloc(buffer, buffer_size);
+        }
+
+        ch = getc(istream);
+        if (ch == EOF) {
+            free(buffer);
+            return nullptr;
+        }
+        if (ch == '\n')
+            break;
+        buffer[ix] = ch;
+    }
+
+    /* 0 terminate buffer. */
+    buffer[ix] = '\0';
+
+    return buffer;
 }
