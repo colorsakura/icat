@@ -1,0 +1,26 @@
+name: build
+on:
+  push:
+    branches:
+      - 'main'
+
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  main:
+    name: "Build icat (Meson)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Setup up"
+        uses: actions/checkout@v3
+
+      - run: sudo apt-get update
+
+      - run: sudo apt-get install -y gcc meson ninja git
+
+      - run: |
+        meson build
+        cd build && ninja
+  
