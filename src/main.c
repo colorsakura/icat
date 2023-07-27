@@ -68,7 +68,7 @@ void usage(int status) {
 }
 
 void streamcopy(FILE *fin, FILE *fout) {
-    char *buffer = "heloo";
+    char *buffer;
     int n = 1;
     while ((buffer = readline(fin)) != nullptr) {
         if (icat.show_numbers) {
