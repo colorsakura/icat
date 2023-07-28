@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifndef nullptr
 #define nullptr NULL
@@ -50,12 +51,17 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if (optind < argc) {
+    if (argc > 1) {
         while (optind < argc) {
-            file = argv[optind++];
-            FILE *fp = fopen(file, "r");
-            streamcopy(fp, stdout);
-            fclose(fp);
+            if (strcmp(argv[optind], "-") == 0) {
+                streamcopy(stdin, stdout);
+            } else {
+                file = argv[optind];
+                FILE *fp = fopen(file, "r");
+                streamcopy(fp, stdout);
+                fclose(fp);
+            }
+            optind++;
         }
     } else {
         streamcopy(stdin, stdout);
