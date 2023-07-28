@@ -21,5 +21,6 @@ jobs:
       - run: sudo apt-get install -y clang-15 meson ninja-build git
 
       - run: |
+          export CC=/usr/bin/clang-15
           meson build
           cd build && ninja
