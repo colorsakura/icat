@@ -18,7 +18,7 @@ jobs:
 
       - run: sudo apt-get update
 
-      - run: sudo apt-get install -y gcc meson ninja-build git
+      - run: sudo apt-get install -y clang-15 meson ninja-build git
 
       - run: |
           meson build
