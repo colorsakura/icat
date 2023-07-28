@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef nullptr
+#define nullptr NULL
+#endif /* define nullptr */
+
 #define ICAT_VERSION "v0.1.0"
 
 void usage(int status);
