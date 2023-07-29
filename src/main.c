@@ -21,7 +21,7 @@ struct icat {
     bool show_tabs;
 };
 
-struct icat icat = {false, false};
+struct icat icat = {false, false, false};
 
 int main(int argc, char *argv[]) {
     char *file;
@@ -52,6 +52,8 @@ int main(int argc, char *argv[]) {
         case 'v':
             printf("icat version: %s\n", ICAT_VERSION);
             exit(EXIT_SUCCESS);
+        default:
+            usage(EXIT_FAILURE);
         }
     }
 
@@ -75,9 +77,33 @@ int main(int argc, char *argv[]) {
 }
 
 void usage(int status) {
-    const char *usage = "Usage: icat [OPTION]... [FILE]...\n"
-                        "Concatenate FILE(s) to standard output.\n"
-                        "\n";
+    const char *usage =
+        "Usage: icat [OPTION]... [FILE]...\n"
+        "Concatenate FILE(s) to standard output.\n"
+        "\n"
+        "With no FILE, or when FILE is -, read standard input.\n"
+        "\n"
+        "  -A, --show-all          equivalent to -vET\n"
+        "  -b, --number-nonblank   number nonempty output lines, overrides -n\n"
+        "  -e                      equivalent to -vE\n"
+        "  -E, --show-ends         display $ at end of each line\n"
+        "  -n, --number            number all output lines\n"
+        "  -s, --squeeze-blank     suppress repeated empty output lines\n"
+        "  -t                      equivalent to -vT\n"
+        "  -T, --show-tabs         display TAB characters as ^I\n"
+        "  -u                      (ignored)\n"
+        "  -v, --show-nonprinting  use ^ and M- notation, except for LFD and "
+        "TAB\n"
+        "      --help              display this help and exit\n"
+        "      --version           output version information and exit\n"
+        "\n"
+        "Examples:\n"
+        "  cat f -g  Output f's contents, then standard input, then g's "
+        "contents.\n"
+        "  cat       Copy standard input to standard output.\n"
+        "\n"
+        "Copyright: Xiang.C <iflygo@outlook.com>\n"
+        "See more information, visit <https://github.com/colorsakura/icat>\n";
     printf("%s", usage);
     exit(status);
 }
