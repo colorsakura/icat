@@ -17,17 +17,19 @@ char *readline(FILE *istream);
 
 struct icat {
     bool show_numbers;
+    bool num_nonblank;
     bool show_ends;
     bool show_tabs;
 };
 
-struct icat icat = {false, false, false};
+struct icat icat = {false, false, false, false};
 
 int main(int argc, char *argv[]) {
     char *file;
 
     static struct option const long_options[] = {
         {"number", no_argument, nullptr, 'n'},
+        {"number-nonblank", no_argument, nullptr, 'b'},
         {"show-tabs", no_argument, nullptr, 'T'},
         {"show-ends", no_argument, nullptr, 'E'},
         {"version", no_argument, nullptr, 'v'},
@@ -35,11 +37,14 @@ int main(int argc, char *argv[]) {
 
     /* Parse command line options. */
     int c;
-    while ((c = getopt_long(argc, argv, "nTEvh", long_options, nullptr)) !=
+    while ((c = getopt_long(argc, argv, "nbTEvh", long_options, nullptr)) !=
            -1) {
         switch (c) {
         case 'n':
             icat.show_numbers = true;
+            break;
+        case 'b':
+            icat.num_nonblank = true;
             break;
         case 'T':
             icat.show_tabs = true;
@@ -112,8 +117,9 @@ void streamcopy(FILE *fin, FILE *fout) {
     char *buffer;
     int n = 1;
     while ((buffer = readline(fin)) != nullptr) {
-        if (icat.show_numbers) {
-            printf(DARY_GRAY "%8d  " NONE, n++);
+        if (icat.show_numbers || icat.num_nonblank) {
+            if (!(icat.num_nonblank && buffer[0] == '\0'))
+                printf(DARY_GRAY "%8d  " NONE, n++);
         }
         fputs(buffer, fout);
         if (icat.show_ends) {
