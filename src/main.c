@@ -46,8 +46,6 @@ int main(int argc, char *argv[]) {
         case 'v':
             printf("icat version: %s\n", ICAT_VERSION);
             exit(EXIT_SUCCESS);
-        default:
-            usage(EXIT_FAILURE);
         }
     }
 
@@ -85,7 +83,8 @@ void streamcopy(FILE *fin, FILE *fout) {
         if (icat.show_numbers) {
             printf(DARY_GRAY "%8d  " NONE, n++);
         }
-        printf("%s\n", buffer);
+        fputs(buffer, fout);
+        fputc('\n', fout);
     }
 }
 
