@@ -17,6 +17,7 @@ char *readline(FILE *istream);
 
 struct icat {
     bool show_numbers;
+    bool show_ends;
     bool show_tabs;
 };
 
@@ -28,18 +29,23 @@ int main(int argc, char *argv[]) {
     static struct option const long_options[] = {
         {"number", no_argument, nullptr, 'n'},
         {"show-tabs", no_argument, nullptr, 'T'},
+        {"show-ends", no_argument, nullptr, 'E'},
         {"version", no_argument, nullptr, 'v'},
         {"help", no_argument, nullptr, 'h'}};
 
     /* Parse command line options. */
     int c;
-    while ((c = getopt_long(argc, argv, "nTvh", long_options, nullptr)) != -1) {
+    while ((c = getopt_long(argc, argv, "nTEvh", long_options, nullptr)) !=
+           -1) {
         switch (c) {
         case 'n':
             icat.show_numbers = true;
             break;
         case 'T':
             icat.show_tabs = true;
+            break;
+        case 'E':
+            icat.show_ends = true;
             break;
         case 'h':
             usage(EXIT_SUCCESS);
@@ -84,6 +90,9 @@ void streamcopy(FILE *fin, FILE *fout) {
             printf(DARY_GRAY "%8d  " NONE, n++);
         }
         fputs(buffer, fout);
+        if (icat.show_ends) {
+            fputc('$', fout);
+        }
         fputc('\n', fout);
     }
 }
