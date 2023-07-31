@@ -18,11 +18,12 @@ char *readline(FILE *istream);
 struct icat {
     bool show_numbers;
     bool num_nonblank;
+    bool squeeze_blank;
     bool show_ends;
     bool show_tabs;
 };
 
-struct icat icat = {false, false, false, false};
+struct icat icat = {false, false, false, false, false};
 
 int main(int argc, char *argv[]) {
     char *file;
@@ -30,6 +31,7 @@ int main(int argc, char *argv[]) {
     static struct option const long_options[] = {
         {"number", no_argument, nullptr, 'n'},
         {"number-nonblank", no_argument, nullptr, 'b'},
+        {"squeeze-blank", no_argument, nullptr, 's'},
         {"show-tabs", no_argument, nullptr, 'T'},
         {"show-ends", no_argument, nullptr, 'E'},
         {"version", no_argument, nullptr, 'v'},
@@ -37,7 +39,7 @@ int main(int argc, char *argv[]) {
 
     /* Parse command line options. */
     int c;
-    while ((c = getopt_long(argc, argv, "nbTEvh", long_options, nullptr)) !=
+    while ((c = getopt_long(argc, argv, "nbsTEvh", long_options, nullptr)) !=
            -1) {
         switch (c) {
         case 'n':
@@ -45,6 +47,9 @@ int main(int argc, char *argv[]) {
             break;
         case 'b':
             icat.num_nonblank = true;
+            break;
+        case 's':
+            icat.squeeze_blank = true;
             break;
         case 'T':
             icat.show_tabs = true;
@@ -116,7 +121,16 @@ void usage(int status) {
 void streamcopy(FILE *fin, FILE *fout) {
     char *buffer;
     int n = 1;
+    bool pre_line_blank = false;
     while ((buffer = readline(fin)) != nullptr) {
+        if (icat.squeeze_blank && buffer[0] == '\0') {
+            if (pre_line_blank) {
+                continue;
+            }
+            pre_line_blank = true;
+        } else {
+            pre_line_blank = false;
+        }
         if (icat.show_numbers || icat.num_nonblank) {
             if (!(icat.num_nonblank && buffer[0] == '\0'))
                 printf(DARY_GRAY "%8d  " NONE, n++);
@@ -129,10 +143,8 @@ void streamcopy(FILE *fin, FILE *fout) {
     }
 }
 
-/* Read a line from FILE stream as a null terminated string.  If buffer is
-   non NULL use at most buffer_size bytes and return a pointer to buffer.
-   Otherwise return a newly malloced buffer. if EOF is read this function
-   returns NULL.  */
+/* Read a line from FILE stream as a null terminated string.  If the line
+   is '\n', return '\0'. if EOF is read this function returns nullptr.  */
 char *readline(FILE *istream) {
     int ix = 0, buffer_size = 64;
     char *buffer;
