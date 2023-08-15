@@ -18,12 +18,13 @@ char *readline(FILE *istream);
 struct icat {
     bool show_numbers;
     bool num_nonblank;
+    bool show_nonprinting;
     bool squeeze_blank;
     bool show_ends;
     bool show_tabs;
 };
 
-struct icat icat = {false, false, false, false, false};
+struct icat icat = {false, false, false, false, false, false};
 
 int main(int argc, char *argv[]) {
     char *file;
@@ -32,6 +33,7 @@ int main(int argc, char *argv[]) {
         {"number", no_argument, nullptr, 'n'},
         {"number-nonblank", no_argument, nullptr, 'b'},
         {"squeeze-blank", no_argument, nullptr, 's'},
+        {"show-nonprinting", no_argument, nullptr, 'v'},
         {"show-tabs", no_argument, nullptr, 'T'},
         {"show-ends", no_argument, nullptr, 'E'},
         {"version", no_argument, nullptr, 'v'},
@@ -60,8 +62,8 @@ int main(int argc, char *argv[]) {
         case 'h':
             usage(EXIT_SUCCESS);
         case 'v':
-            printf("icat version: %s\n", ICAT_VERSION);
-            exit(EXIT_SUCCESS);
+            icat.show_nonprinting = true;
+            break;
         default:
             usage(EXIT_FAILURE);
         }
@@ -168,6 +170,11 @@ char *readline(FILE *istream) {
         }
         if (ch == '\n')
             break;
+        if (icat.show_nonprinting && ch > 0 && ch < 27) {
+            buffer[ix] = '^';
+            buffer[ix + 1] = ch + 40;
+            continue;
+        }
         buffer[ix] = ch;
     }
 
